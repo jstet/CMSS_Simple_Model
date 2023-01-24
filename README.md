@@ -1,1 +1,3 @@
-# Material for CMSS presentation  
+# Material for CMSS presentation
+
+https://github.com/dgarcia-eu/CMSS-Konstanz
