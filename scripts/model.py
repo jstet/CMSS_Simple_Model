@@ -4,22 +4,15 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 
-alpha = random.uniform(1, 1)
-beta = random.uniform(1, 1)
 
-
-def init_gnp(n, p):
-    return nx.gnp_random_graph(n, p)
-
-
-def simple_model(g, upper_phi):
+def simple_model(g, upper_phi, alpha, beta):
     # population is initially all-off
     nx.set_node_attributes(g, 0, "state")
 
     # each agent is assigned a threshold  drawn at random from a distribution
     for i in list(g.nodes):
-        phi = np.random.beta(10, 1)
-        attrs = {i: {"phi": phi}}
+        phi = np.random.beta(alpha, beta)
+        attrs = {i: {"phi": 1}}
         nx.set_node_attributes(g, attrs)
 
     # at time t = 0 a small fraction of vertices is switched on, fraction equals uppercase phi
@@ -27,7 +20,7 @@ def simple_model(g, upper_phi):
     attrs = {i: {"state": 1} for i in innovators}
     nx.set_node_attributes(g, attrs)
 
-    states = {"initial": g.copy()}
+    initial = g.copy()
 
     node_lst = list(g.nodes)
     # all vertices update their states in random, asynchronous order
@@ -52,12 +45,8 @@ def simple_model(g, upper_phi):
             except ZeroDivisionError as e:
                 pass
 
-    states["end"] = g
-    return states
+    return initial, g
 
 
-G = nx.gnp_random_graph(100,0.1)
-simulation = simple_model(G, 1)
-print(simulation["end"])
 
 #%%
