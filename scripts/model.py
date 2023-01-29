@@ -26,6 +26,7 @@ def simple_model(n, z, phi, upper_phi):
         lst = []
         node_lst = list(g.nodes)
         while True:
+            nx.set_node_attributes(g, 0, "current")
             if not node_lst:
                 break
             idx = random.randint(0, len(node_lst)-1)
@@ -37,6 +38,8 @@ def simple_model(n, z, phi, upper_phi):
                 phi = g.nodes[node]["phi"]
                 # (Counting neighbours with state = 1)
                 state_count = sum([1 for neighbour in list(neighbours) if g.nodes[neighbour]["state"] == 1])
+                attrs = {node: {"current": 1}}
+                nx.set_node_attributes(g, attrs)
                 try:
                     # Adopts state 1 if at least a threshold fraction of its neighbors are in state 1
                     if state_count/k >= phi:

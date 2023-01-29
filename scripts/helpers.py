@@ -28,3 +28,22 @@ def col_nodes_phi(g):
         else:
             node_color.append('blue')
     return node_color
+
+
+def col_nodes_current(g):
+    # create empty list for node colors
+    node_color = []
+    # for each node in the graph
+    for node in list(g.nodes):
+        if g.nodes[node]["current"] == 1:
+            node_color.append('black')
+        elif g.nodes[node]["state"] == 1:
+            node_color.append('blue')
+        elif len(g.adj[node]) == 0:
+            node_color.append('red')
+            continue
+        elif g.nodes[node]["phi"] < 1/len(g.adj[node]):
+            node_color.append('green')
+        else:
+            node_color.append('red')
+    return node_color
