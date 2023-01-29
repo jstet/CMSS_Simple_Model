@@ -1,8 +1,5 @@
 import networkx as nx
-import matplotlib
 import random
-import numpy as np
-import matplotlib.pyplot as plt
 
 
 def simple_model(n, z, phi, upper_phi):
@@ -21,17 +18,16 @@ def simple_model(n, z, phi, upper_phi):
     attrs = {i: {"state": 1} for i in innovators}
     nx.set_node_attributes(g, attrs)
 
-    initial = g.copy()
-
-    node_lst = list(g.nodes)
     # all vertices update their states in random, asynchronous order
     # (drawing a random index and removing the corresponding node from list)
-    change = True
-    while change:
+    iter_lst = []
+    while True:
+        count = 0
+        lst = []
+        node_lst = list(g.nodes)
         while True:
             if not node_lst:
                 break
-            change = False
             idx = random.randint(0, len(node_lst)-1)
             node = node_lst.pop(idx)
             if g.nodes[node]["state"] != 1:
@@ -40,17 +36,20 @@ def simple_model(n, z, phi, upper_phi):
                 k = len(neighbours)
                 phi = g.nodes[node]["phi"]
                 # (Counting neighbours with state = 1)
-                count = sum([1 for neighbour in list(neighbours) if g.nodes[neighbour]["state"] == 1])
+                state_count = sum([1 for neighbour in list(neighbours) if g.nodes[neighbour]["state"] == 1])
                 try:
                     # Adopts state 1 if at least a threshold fraction of its neighbors are in state 1
-                    if count/k >= phi:
+                    if state_count/k >= phi:
                         attrs = {node: {"state": 1}}
                         nx.set_node_attributes(g, attrs)
-                        change = True
+                        count += 1
                 except ZeroDivisionError as e:
                     pass
+            lst.append(g.copy())
+        iter_lst.append(lst)
+        if count == 0:
+            break
 
-    return initial, g
+    return iter_lst
 
 
-initial, end = simple_model(100,4, 0.3, upper_phi=2)
